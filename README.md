@@ -21,10 +21,18 @@ Processo principal do DIDV. Contém:
 
 ### ePub
 
+meu_epub.rb:
+
+    # supondo que o programa meu_epub.rb esta no diretorio raiz do didv_daemon
+    # e que no mesmo diretorio tenho um arquivo livro.epub
     require_relative 'lib/didv_daemon'
     
     meu_epub = DIDV::EPub.new("livro.epub")
+    
     puts meu_epub.metadata[:author]
     puts meu_epub.metadata[:title]
-    # o comando abaixo imprime TODO o texto extraído do epub.
-    puts meu_epub.text
+    
+    # o comando abaixo imprime TODO o texto extraído do epub em um novo arquivo.
+    File.open("livro.txt") do |f|
+      f.puts meu_epub.text
+    end
