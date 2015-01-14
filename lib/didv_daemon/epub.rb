@@ -2,7 +2,7 @@ module DIDV
 
   class EPub
 
-    attr_accessor :metadata,:content_opf,:text
+    attr_accessor :metadata,:text
 
     def initialize (filename)
       @epub = load_epub(filename)
@@ -12,13 +12,23 @@ module DIDV
       @text = load_text
     end
 
+    private
+
     def load_epub(filename)
-      Zip::File.open(filename)
+      begin
+        Zip::File.open(filename)
+      rescue Exception => e
+        raise "Invalid filename! #{e.message}"
+      end
     end
 
     def content_entry_path
-      container = Nokogiri::XML(@epub.read("META-INF/container.xml"))
-      container.css("rootfile").first.attribute("full-path").value
+      begin
+        container = Nokogiri::XML(@epub.read("META-INF/container.xml"))
+        container.css("rootfile").first.attribute("full-path").value
+      rescue Exception => e
+        raise "Invalid epub file! #{e.message}"
+      end
     end
 
     def load_content_opf
@@ -30,6 +40,7 @@ module DIDV
       metadata = {}
       metadata[:title] = @content_opf.css("title").text
       metadata[:author] = @content_opf.css("creator").text
+      metadata
     end
 
     def load_text
