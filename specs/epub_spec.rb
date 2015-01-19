@@ -12,7 +12,7 @@ describe DIDV::EPub, "new" do
     expect { DIDV::EPub.new("inexistent.epub") }.to raise_error(message)
   end
 
-  it "raise error when trying to open an inexistent file" do
+  it "raise error when trying to open an invalid file" do
     book = "specs/files/invalid.epub"
     message = "Invalid epub file! No such file or directory - META-INF/container.xml"
     expect { DIDV::EPub.new(book) }.to raise_error(message)
