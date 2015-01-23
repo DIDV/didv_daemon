@@ -6,6 +6,7 @@ module DIDV
 
     def initialize new_content = nil
       self.content = new_content
+      load_dictionary
     end
 
     def content= content
@@ -25,7 +26,19 @@ module DIDV
       cell_array
     end
 
+    def each_cell &block
+      cells.each &block
+    end
+
+    def self.char_to_braille
+      load_dictionary
+    end
+
     private
+
+    def load_dictionary
+      @dictionary = YAML::load_file("lib/didv_braille/braille.yml")
+    end
 
     def valid? content
       if content.nil? or
@@ -38,33 +51,6 @@ module DIDV
       end
     end
 
-  end
-
-end
-
-module DIDV
-
-  UCHARS="[A-ZÀ-ÖØ-Ý]"
-  SCHARS="[,;:.'\"?!-]"
-  LCHARS="[a-zà-öø-ÿ]"
-  NCHARS="[0-9]"
-
-
-  def self.to_braille word
-    if word.match /\A(#{LCHARS})+\z/
-      content = ""
-      word.each_char { |char| content << char_to_braille(char) }
-      Braille.new(content)
-    else
-      false
-    end
-  end
-
-  private
-
-  def self.char_to_braille char
-    braille_yml = YAML::load_file("lib/didv_daemon/braille.yml")
-    braille_yml['non_numeric'][char]
   end
 
 end
