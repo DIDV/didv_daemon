@@ -8,7 +8,6 @@ module DIDV
   class InkText
 
     def initialize text
-
       @text = text
       @dictionary = YAML::load_file("lib/didv_daemon/braille.yml")
       @flags = {
@@ -22,7 +21,7 @@ module DIDV
       Braille.new(content)
     end
 
-    #private
+    private
 
     def char_to_braille char
       if is_a_number? char
