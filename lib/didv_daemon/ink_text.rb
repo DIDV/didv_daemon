@@ -36,6 +36,8 @@ module DIDV
 
       else
 
+        @flags[:number] = false
+
         if is_a_capital? char
           # return capital code plus char code
           "#{@dictionary['braille']['uppercase']}#{@dictionary['non_numeric'][char.downcase]}"
