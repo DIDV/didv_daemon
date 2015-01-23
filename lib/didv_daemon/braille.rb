@@ -6,7 +6,6 @@ module DIDV
 
     def initialize new_content = nil
       self.content = new_content
-      load_dictionary
     end
 
     def content= content
@@ -35,10 +34,6 @@ module DIDV
     end
 
     private
-
-    def load_dictionary
-      @dictionary = YAML::load_file("lib/didv_braille/braille.yml")
-    end
 
     def valid? content
       if content.nil? or
