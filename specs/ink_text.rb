@@ -14,4 +14,10 @@ describe DIDV::InkText, "new" do
     expect( ink_text.to_braille.content ).to eq(expected)
   end
 
+  it "returns the expected braille to mixed string" do
+    ink_text = DIDV::InkText.new("Texto com muitas c015as!!!")
+    expected = "001111100000110000100100000000001111100000110000100100"
+    expect( ink_text.to_braille.content ).to eq(expected)
+  end
+
 end
