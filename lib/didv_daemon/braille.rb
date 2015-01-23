@@ -29,10 +29,6 @@ module DIDV
       cells.each &block
     end
 
-    def self.char_to_braille
-      load_dictionary
-    end
-
     private
 
     def valid? content
