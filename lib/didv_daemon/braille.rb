@@ -33,9 +33,9 @@ module DIDV
 
     def valid? content
       if content.nil? or
-        ( content.delete("10").empty? and
-        content.size % 6 == 0 )
-        then
+        ( content.delete("10\n").empty? and
+        content.gsub("\n",'').size % 6 == 0 )
+      then
         true
       else
         false
