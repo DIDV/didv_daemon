@@ -17,7 +17,11 @@ module DIDV
 
     def to_braille
       content = ""
-      @text.each_char { |char| content << char_to_braille(char) }
+      @text.each_char do |char|
+        unless is_ignorable? char
+          content << char_to_braille(char)
+        end
+      end
       Braille.new(content)
     end
 
@@ -44,6 +48,14 @@ module DIDV
           @dictionary['non_numeric'][char]
         end
 
+      end
+    end
+
+    def is_ignorable? char
+      if char =~ /\r/
+        true
+      else
+        false
       end
     end
 

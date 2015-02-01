@@ -73,6 +73,7 @@ non_numeric:
   "\u2192" : '010010101010' #seta para a direita
   "\u2190" : '010101010010' #seta para a esquerda
   "\u2194" : '010101010010101010' #seta bidirecional
+  "\t": '000000000000000000000000' #tab = 4 espacos
   EOT: '000101010101000101010101000101010101'
 numbers:
   "1": '100000'

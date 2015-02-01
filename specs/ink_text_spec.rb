@@ -20,4 +20,16 @@ describe DIDV::InkText, "to_braille" do
     expect( ink_text.to_braille.content ).to eq( foo )
   end
 
+  it "should ignore carriage return escapes" do
+    ink_text = DIDV::InkText.new("my text\r")
+    foo = "101100101111000000011110100010101101011110"
+    expect( ink_text.to_braille.content ).to eq( foo )
+  end
+
+  it "should translate tabs to four spaces" do
+    ink_text = DIDV::InkText.new("\t")
+    foo = "000000000000000000000000"
+    expect( ink_text.to_braille.content ).to eq( foo )
+  end
+
 end
