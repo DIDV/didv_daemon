@@ -32,4 +32,10 @@ describe DIDV::InkText, "to_braille" do
     expect( ink_text.to_braille.content ).to eq( foo )
   end
 
+  it "should keep new line escapes" do
+    ink_text = DIDV::InkText.new("\n")
+    foo = "\n"
+    expect( ink_text.to_braille.content ).to eq( foo )
+  end
+
 end

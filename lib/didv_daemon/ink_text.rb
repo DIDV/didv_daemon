@@ -18,8 +18,15 @@ module DIDV
     def to_braille
       content = ""
       @text.each_char do |char|
-        unless is_ignorable? char
-          content << char_to_braille(char)
+        if is_literal? char
+          content << char
+        else
+          unless is_ignorable? char
+            braille_char = char_to_braille(char)
+            unless braille_char.nil?
+              content << braille_char
+            end
+          end
         end
       end
       Braille.new(content)
@@ -53,6 +60,14 @@ module DIDV
 
     def is_ignorable? char
       if char =~ /\r/
+        true
+      else
+        false
+      end
+    end
+
+    def is_literal? char
+      if char =~ /\n/
         true
       else
         false
