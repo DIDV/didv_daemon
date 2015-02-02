@@ -1,13 +1,13 @@
 module DIDV
 
-  def self.to_braille ink_text
-    utils = InkText.new ink_text
-    utils.to_braille
+  def self.to_braille(ink_text, size=nil)
+    text = InkText.new ink_text
+    text.to_braille size
   end
 
   class InkText
 
-    def initialize text
+    def initialize(text)
       @text = text
       @dictionary = YAML::load_file("lib/didv_daemon/braille.yml")
       @flags = {
@@ -15,7 +15,7 @@ module DIDV
       }
     end
 
-    def to_braille
+    def to_braille(size=nil)
       content = ""
       @text.each_char do |char|
         if is_literal? char
@@ -29,12 +29,16 @@ module DIDV
           end
         end
       end
-      Braille.new(content)
+      unless size.nil?
+        Braille.new(content, lines: size)
+      else
+        Braille.new(content)
+      end
     end
 
     private
 
-    def char_to_braille char
+    def char_to_braille(char)
       if is_a_number? char
 
         if @flags[:number]
@@ -58,7 +62,7 @@ module DIDV
       end
     end
 
-    def is_ignorable? char
+    def is_ignorable?(char)
       if char =~ /\r/
         true
       else
@@ -66,7 +70,7 @@ module DIDV
       end
     end
 
-    def is_literal? char
+    def is_literal?(char)
       if char =~ /\n/
         true
       else
@@ -74,7 +78,7 @@ module DIDV
       end
     end
 
-    def is_a_number? char
+    def is_a_number?(char)
       if char =~ /\A[0-9\u20AC$=+-]\z/
         true
       else
@@ -82,7 +86,7 @@ module DIDV
       end
     end
 
-    def is_a_capital? char
+    def is_a_capital?(char)
       if char =~ /\A[A-ZÀ-ÖØ-Ý]\z/
         true
       else
