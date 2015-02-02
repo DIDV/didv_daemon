@@ -41,7 +41,6 @@ module DIDV
 
     def check_params(params)
       line_size = params.first[:lines]
-      puts line_size.class
       define_lines line_size if line_size.is_a? Fixnum
     end
 
