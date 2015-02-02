@@ -15,3 +15,22 @@ describe DIDV::Braille, "new" do
   end
 
 end
+
+describe DIDV::Braille, "lines" do
+
+  before(:all) do
+    @foo = DIDV::to_braille("this is\n my braille text", 7)
+  end
+
+  it "should return an array of lines" do
+    expect(@foo.lines).to be_an Array
+    expect(@foo.lines.empty?).to be false
+  end
+
+  it "should return an array of n size lines" do
+    @foo.lines.each do |line|
+      expect(line.size).to be 42
+    end
+  end
+
+end

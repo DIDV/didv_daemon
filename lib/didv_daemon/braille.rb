@@ -2,13 +2,15 @@ module DIDV
 
   class Braille
 
-    attr_reader :content
+    attr_reader :content,:lines
 
-    def initialize new_content = nil
+    def initialize(new_content = nil, *params)
       self.content = new_content
+      @lines = []
+      check_params params unless params.empty?
     end
 
-    def content= content
+    def content=(content)
       if valid? content
         @content = content
       else
@@ -17,21 +19,16 @@ module DIDV
     end
 
     def cells
-      cell_array = []
-      tmp_content = @content.chars
-      while tmp_content.any?
-        cell_array << tmp_content.shift(6).join
-      end
-      cell_array
+      group_points @content,6
     end
 
-    def each_cell &block
+    def each_cell(&block)
       cells.each &block
     end
 
     private
 
-    def valid? content
+    def valid?(content)
       if content.nil? or
         ( content.delete("10\n").empty? and
         content.gsub("\n",'').size % 6 == 0 )
@@ -40,6 +37,37 @@ module DIDV
       else
         false
       end
+    end
+
+    def check_params(params)
+      line_size = params.first[:lines]
+      puts line_size.class
+      define_lines line_size if line_size.is_a? Fixnum
+    end
+
+    def define_lines(cells_by_line)
+      points_by_line = cells_by_line * 6
+      @content.each_line do |string_line|
+        group_points(string_line, points_by_line).each do |line|
+          @lines << normalize_line(line, points_by_line)
+        end
+      end
+    end
+
+    def normalize_line(line, points_by_line)
+      (points_by_line - line.size).times do
+        line << '0'
+      end
+      line
+    end
+
+    def group_points(content,size)
+      cell_array = []
+      tmp_content = content.gsub("\n",'').chars
+      while tmp_content.any?
+        cell_array << tmp_content.shift(size).join
+      end
+      cell_array
     end
 
   end

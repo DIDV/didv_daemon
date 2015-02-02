@@ -4,7 +4,7 @@ module DIDV
 
     attr_accessor :metadata,:text
 
-    def initialize (filename)
+    def initialize(filename)
       @epub = load_epub(filename)
       @content_opf = load_content_opf
       @metadata = load_metadata
