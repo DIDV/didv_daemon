@@ -9,7 +9,6 @@ module DIDV
 
     def initialize(text)
       @text = text
-      @dictionary = YAML::load_file("lib/didv_daemon/braille.yml")
       @flags = {
         number: false
       }
@@ -42,10 +41,10 @@ module DIDV
       if is_a_number? char
 
         if @flags[:number]
-          @dictionary['numbers'][char]
+          DICT['numbers'][char]
         else
           @flags[:number] = true
-          "#{@dictionary['braille']['number']}#{@dictionary['numbers'][char]}"
+          "#{DICT['braille']['number']}#{DICT['numbers'][char]}"
         end
 
       else
@@ -54,9 +53,9 @@ module DIDV
 
         if is_a_capital? char
           # return capital code plus char code
-          "#{@dictionary['braille']['uppercase']}#{@dictionary['non_numeric'][char.downcase]}"
+          "#{DICT['braille']['uppercase']}#{DICT['non_numeric'][char.downcase]}"
         else
-          @dictionary['non_numeric'][char]
+          DICT['non_numeric'][char]
         end
 
       end

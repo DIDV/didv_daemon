@@ -19,7 +19,7 @@ module DIDV
     end
 
     def cells
-      group_points @content,6
+      group_points @content,POINTS
     end
 
     def each_cell(&block)
@@ -31,7 +31,7 @@ module DIDV
     def valid?(content)
       if content.nil? or
         ( content.delete("10\n").empty? and
-        content.gsub("\n",'').size % 6 == 0 )
+        content.gsub("\n",'').size % POINTS == 0 )
       then
         true
       else
@@ -45,7 +45,7 @@ module DIDV
     end
 
     def define_lines(cells_by_line)
-      points_by_line = cells_by_line * 6
+      points_by_line = cells_by_line * POINTS
       @content.each_line do |string_line|
         group_points(string_line, points_by_line).each do |line|
           @lines << normalize_line(line, points_by_line)

@@ -2,6 +2,7 @@
 metadata:
   country: 'Brazil'
   type: 'liter'
+  points: 6
 non_numeric:
   " ": '000000'
   "a": '100000'
