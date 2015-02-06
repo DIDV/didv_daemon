@@ -26,6 +26,10 @@ module DIDV
       cells.each &block
     end
 
+    def each_line(&block)
+      @lines.each &block
+    end
+
     private
 
     def valid?(content)

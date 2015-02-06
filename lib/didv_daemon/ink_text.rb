@@ -44,7 +44,7 @@ module DIDV
           DICT['numbers'][char]
         else
           @flags[:number] = true
-          "#{DICT['braille']['number']}#{DICT['numbers'][char]}"
+          "#{DICT['number']}#{DICT['numbers'][char]}"
         end
 
       else
@@ -53,9 +53,9 @@ module DIDV
 
         if is_a_capital? char
           # return capital code plus char code
-          "#{DICT['braille']['uppercase']}#{DICT['non_numeric'][char.downcase]}"
+          "#{DICT['uppercase']}#{DICT[char.downcase]}"
         else
-          DICT['non_numeric'][char]
+          DICT[char]
         end
 
       end

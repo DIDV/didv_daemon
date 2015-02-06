@@ -35,20 +35,3 @@ describe DIDV::Braille, "lines" do
   end
 
 end
-
-describe DIDV::Braille, "ink_text" do
-
-  before(:all) do
-    @text = "this is\n my braille text"
-    @foo = DIDV::to_braille(@text)
-  end
-
-  it "should return a ink text object" do
-    expect(@foo.ink_text).to be_a DIDV::InkText
-  end
-
-  it "should return the expected ink text content" do
-    expect(@foo.ink_text.text).to be_eq(@text)
-  end
-
-end
