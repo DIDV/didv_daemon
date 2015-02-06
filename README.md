@@ -65,6 +65,6 @@ meu_braille.rb
 ## Testes
 
     # testar todas as classes
-    bundle exec rspec specs
+    bundle exec rspec
     # testar uma classe especifica
-    bundle exec rspec specs/<nome_da_classe>_specs.rb
+    bundle exec rspec spec/<nome_da_classe>_specs.rb
