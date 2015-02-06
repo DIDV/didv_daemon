@@ -3,7 +3,7 @@ require_relative '../lib/didv_daemon' unless defined?(DIDV)
 describe DIDV::EPub, "new" do
 
   it "returns an DIDV::EPub when opens a valid epub file" do
-    book = "specs/fixtures/valid.epub"
+    book = "spec/fixtures/valid.epub"
     expect(DIDV::EPub.new(book)).to be_a(DIDV::EPub)
   end
 
@@ -13,7 +13,7 @@ describe DIDV::EPub, "new" do
   end
 
   it "raise error when trying to open an invalid file" do
-    book = "specs/fixtures/invalid.epub"
+    book = "spec/fixtures/invalid.epub"
     message = "Invalid epub file! No such file or directory - META-INF/container.xml"
     expect { DIDV::EPub.new(book) }.to raise_error(message)
   end
