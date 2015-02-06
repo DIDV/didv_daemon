@@ -29,9 +29,18 @@ describe DIDV::Braille, "lines" do
   end
 
   it "should return an array of n size lines" do
-    @foo.lines.each do |line|
+    @foo.each_line do |line|
       expect(line.size).to be 42
     end
+  end
+
+end
+
+describe DIDV::Braille, "ink_text" do
+
+  before(:all) do
+    @text = "this is\n my braille text"
+    @foo = DIDV::to_braille(@text)
   end
 
   it "should return a ink text object" do
@@ -41,4 +50,5 @@ describe DIDV::Braille, "lines" do
   it "should return the expected ink text content" do
     expect(@foo.ink_text.text).to be_eq(@text)
   end
+
 end
