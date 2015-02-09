@@ -48,7 +48,7 @@ meu_epub.rb:
 
 ### Braille
 
-meu_braille.rb
+meu_braille.rb:
 
     # supondo que o programa meu_epub.rb esta no diretorio raiz do didv_daemon
     # e que no mesmo diretorio tenho um arquivo livro.epub
