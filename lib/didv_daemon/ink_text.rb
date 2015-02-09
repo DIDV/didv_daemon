@@ -1,36 +1,50 @@
 module DIDV
 
-  def self.to_braille ink_text
-    utils = InkText.new ink_text
-    utils.to_braille
+  def self.to_braille(ink_text, size=nil)
+    text = InkText.new ink_text
+    text.to_braille size
   end
 
   class InkText
 
-    def initialize text
+    def initialize(text)
       @text = text
-      @dictionary = YAML::load_file("lib/didv_daemon/braille.yml")
       @flags = {
         number: false
       }
     end
 
-    def to_braille
+    def to_braille(size=nil)
       content = ""
-      @text.each_char { |char| content << char_to_braille(char) }
-      Braille.new(content)
+      @text.each_char do |char|
+        if is_literal? char
+          content << char
+        else
+          unless is_ignorable? char
+            braille_char = char_to_braille(char)
+            unless braille_char.nil?
+              content << braille_char
+            end
+          end
+        end
+      end
+      unless size.nil?
+        Braille.new(content, lines: size)
+      else
+        Braille.new(content)
+      end
     end
 
     private
 
-    def char_to_braille char
+    def char_to_braille(char)
       if is_a_number? char
 
         if @flags[:number]
-          @dictionary['numbers'][char]
+          DICT['numbers'][char]
         else
           @flags[:number] = true
-          "#{@dictionary['braille']['number']}#{@dictionary['numbers'][char]}"
+          "#{DICT['number']}#{DICT['numbers'][char]}"
         end
 
       else
@@ -39,15 +53,31 @@ module DIDV
 
         if is_a_capital? char
           # return capital code plus char code
-          "#{@dictionary['braille']['uppercase']}#{@dictionary['non_numeric'][char.downcase]}"
+          "#{DICT['uppercase']}#{DICT[char.downcase]}"
         else
-          @dictionary['non_numeric'][char]
+          DICT[char]
         end
 
       end
     end
 
-    def is_a_number? char
+    def is_ignorable?(char)
+      if char =~ /\r/
+        true
+      else
+        false
+      end
+    end
+
+    def is_literal?(char)
+      if char =~ /\n/
+        true
+      else
+        false
+      end
+    end
+
+    def is_a_number?(char)
       if char =~ /\A[0-9\u20AC$=+-]\z/
         true
       else
@@ -55,7 +85,7 @@ module DIDV
       end
     end
 
-    def is_a_capital? char
+    def is_a_capital?(char)
       if char =~ /\A[A-ZÀ-ÖØ-Ý]\z/
         true
       else

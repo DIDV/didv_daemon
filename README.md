@@ -8,8 +8,17 @@ Processo principal do DIDV. Contém:
 
 ## Pré-requisitos
 
-1. Ruby (rvm)
-2. Bundler
+1. Sistema Operacional Linux ou Mac OS X
+
+2. Ruby<br>
+Sugestão de instalação através do rvm:
+
+        gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+        curl -sSL https://get.rvm.io | bash -s stable --ruby=2.1.2
+
+3. Bundler
+
+        gem install bundler
 
 ## Instalação
 
@@ -39,7 +48,7 @@ meu_epub.rb:
 
 ### Braille
 
-meu_braille.rb
+meu_braille.rb:
 
     # supondo que o programa meu_epub.rb esta no diretorio raiz do didv_daemon
     # e que no mesmo diretorio tenho um arquivo livro.epub
@@ -65,6 +74,6 @@ meu_braille.rb
 ## Testes
 
     # testar todas as classes
-    bundle exec rspec specs
+    bundle exec rspec
     # testar uma classe especifica
-    bundle exec rspec specs/<nome_da_classe>_specs.rb
+    bundle exec rspec spec/<nome_da_classe>_specs.rb
