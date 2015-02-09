@@ -11,11 +11,13 @@ Processo principal do DIDV. Contém:
 1. Sistema Operacional Linux ou Mac OS X
 
 2. Ruby<br>
-Sugestão de instalação através do rvm:<br>
+Sugestão de instalação através do rvm:
+
         gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
         curl -sSL https://get.rvm.io | bash -s stable --ruby=2.1.2
 
 3. Bundler
+
         gem install bundler
 
 ## Instalação
