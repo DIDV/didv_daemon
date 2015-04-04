@@ -1,5 +1,9 @@
 module DIDV
 
+  def self.draw_text(text)
+    draw_cells to_braille(text).cells
+  end
+
   def self.draw_cells(cells)
     signed_cells = []
     cells.each { |cell| signed_cells << signed_cell(cell) }
