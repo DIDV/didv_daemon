@@ -1,5 +1,27 @@
 module DIDV
 
+  def self.draw_cells(cells)
+    signed_cells = []
+    cells.each { |cell| signed_cells << signed_cell(cell) }
+    draw = ""
+    (0..2).each do |line|
+      signed_cells.each do |signed_cell|
+        draw << "#{signed_cell[line]} #{signed_cell[line+3]}  "
+      end
+      draw << "\n"
+    end
+    draw
+  end
+
+
+  def self.signed_cell(cell)
+    pins = cell.chars
+    pins.each_index do |index|
+      pins[index] = pins[index] == '1' ? 'o' : '-'
+    end
+    pins
+  end
+
   class Braille
 
     attr_reader :content,:lines
