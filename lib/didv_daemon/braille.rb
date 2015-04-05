@@ -37,6 +37,15 @@ module DIDV
       end
     end
 
+    def group_points(content,points)
+      content_chars = content.chars
+      grouped_points = []
+      while( content_chars.any? )
+        grouped_points << content_chars.shift(points).join
+      end
+      grouped_points
+    end
+
 
   end
 
