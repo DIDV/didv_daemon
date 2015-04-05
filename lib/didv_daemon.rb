@@ -8,7 +8,7 @@ require 'didv_daemon/conf'
 require 'didv_daemon/epub'
 require 'didv_daemon/braille'
 require 'didv_daemon/ink_text'
-require 'didv_daemon/reader'
+require 'didv_daemon/element'
 
 module DIDV
 
