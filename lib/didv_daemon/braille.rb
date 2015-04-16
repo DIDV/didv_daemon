@@ -2,7 +2,7 @@ module DIDV
 
   class Braille
 
-    attr_reader :content
+    attr_accessor :content
 
     def initialize(new_content = nil, *params)
       self.content = new_content
@@ -21,7 +21,7 @@ module DIDV
     end
 
     def each_cell(&block)
-      cells.each block
+      cells.each &block
     end
 
     def lines(size=10)
@@ -40,6 +40,51 @@ module DIDV
 
     def each_line(size=10, &block)
       lines.each &block
+    end
+
+    def to_text
+      text = ""
+      braille_cells = cells
+      flag = nil
+
+      until braille_cells.empty?
+        cell = braille_cells.shift
+
+        if cell == "\n"
+          text << "\n"
+        else
+          chr = DICT.key cell
+          unless chr
+            next_cell = braille_cells.shift
+            chr = DICT.key(cell+next_cell)
+          end
+          case chr
+          when "number" then flag="number"
+          when "uppercase"
+            if flag == "upcase_char"
+              flag = "upcase_word"
+            else
+              flag = "upcase_char"
+            end
+          when "downcase"
+            flag = nil
+          else
+            new_chr = chr
+            case flag
+            when "number" then new_chr = DICT['numbers'].key(cell)
+            when "upcase_char"
+              new_chr = chr.upcase
+              flag = nil
+            when "upcase_word" then new_chr = chr.upcase
+            when " " then flag=nil
+            end
+            text << new_chr
+          end
+
+
+        end
+      end
+      text
     end
 
     private
