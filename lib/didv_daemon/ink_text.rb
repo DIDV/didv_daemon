@@ -35,31 +35,21 @@ module DIDV
         end
         word.each_char do |chr|
 
-          # end of line logic
-          if chr == "\n"
+          case chr
+          when "\n"
             content << chr
-
-          # space logic
-          elsif chr == " "
+          when " "
             content << "000000"
             last_char_was_a_number = false
-
-          # alphanumeric symbol logic
-          elsif chr =~ /[\u20AC\$\=\+\-\.\,]/
+          when /[\u20AC\$\=\+\-\.\,]/
             content << DICT[chr]
-
-          # number logic
-          elsif chr =~ /[0-9]/
+          when /[0-9]/
             unless last_char_was_a_number
               content << DICT['number']
               last_char_was_a_number = true
             end
             content << DICT['numbers'][chr]
-
-          # alpha logic
-          elsif chr =~ /([[:alpha:]]|[[:punct:]])/
-
-            # is a capital?
+          when /([[:alpha:]]|[[:punct:]])/
             if chr =~ /\A[A-ZÀ-ÖØ-Ý]\z/
               content << DICT['uppercase']
             elsif last_char_was_a_number
