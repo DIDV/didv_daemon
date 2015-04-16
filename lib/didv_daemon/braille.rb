@@ -34,13 +34,7 @@ module DIDV
 
       # split in lines
       lines = []
-      until content.empty?
-        lines << Braille.new(content.shift(6*size).join)
-      end
-
-      # fill last line if needed
-      # lines.last << "0" * (pins_size % lines.last.size)
-
+      lines << Braille.new(content.shift(6*size).join) until content.empty?
       lines
     end
 
