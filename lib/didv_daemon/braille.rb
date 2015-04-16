@@ -38,6 +38,10 @@ module DIDV
       lines
     end
 
+    def each_line(size=10, &block)
+      lines.each &block
+    end
+
     private
 
     def fill_line(line,size)
