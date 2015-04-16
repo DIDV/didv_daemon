@@ -7,6 +7,8 @@ module DIDV
 
   class InkText
 
+    attr_accessor :text
+
     def initialize(text)
       @text = text
       @flags = {
@@ -15,83 +17,79 @@ module DIDV
     end
 
     def to_braille(size=nil)
-      content = ""
-      @text.each_char do |char|
-        if is_literal? char
-          content << char
-        else
-          unless is_ignorable? char
-            braille_char = char_to_braille(char)
-            unless braille_char.nil?
-              content << braille_char
-            end
+
+       @text_food = @text.gsub("\t","    ")
+      last_char_was_a_number = false
+      content=""
+
+      until @text_food.empty?
+
+        word = self.shift_word
+        unless word.empty?
+          if word =~ /\A[A-ZÀ-ÖØ-Ý]{2,}\z/
+            content << DICT['uppercase'] * 2
+            word.downcase!
           end
-        end
-      end
-      unless size.nil?
-        Braille.new(content, lines: size)
-      else
-        Braille.new(content)
-      end
-    end
-
-    private
-
-    def char_to_braille(char)
-      if is_a_number? char
-
-        if @flags[:number]
-          DICT['numbers'][char]
         else
-          @flags[:number] = true
-          "#{DICT['number']}#{DICT['numbers'][char]}"
+          word = self.shift_char
+        end
+        word.each_char do |chr|
+
+          # end of line logic
+          if chr == "\n"
+            content << chr
+
+          # space logic
+          elsif chr == " "
+            content << "000000"
+            last_char_was_a_number = false
+
+          # alphanumeric symbol logic
+          elsif chr =~ /[\u20AC\$\=\+\-\.\,]/
+            content << DICT[chr]
+
+          # number logic
+          elsif chr =~ /[0-9]/
+            unless last_char_was_a_number
+              content << DICT['number']
+              last_char_was_a_number = true
+            end
+            content << DICT['numbers'][chr]
+
+          # alpha logic
+          elsif chr =~ /([[:alpha:]]|[[:punct:]])/
+
+            # is a capital?
+            if chr =~ /\A[A-ZÀ-ÖØ-Ý]\z/
+              content << DICT['uppercase']
+            elsif last_char_was_a_number
+              content << DICT['lowercase']
+            end
+            content << DICT[chr.downcase]
+            last_char_was_a_number = false
+          end
+
         end
 
-      else
-
-        @flags[:number] = false
-
-        if is_a_capital? char
-          # return capital code plus char code
-          "#{DICT['uppercase']}#{DICT[char.downcase]}"
-        else
-          DICT[char]
-        end
-
+        # end
       end
+
+      Braille.new(content)
+
     end
 
-    def is_ignorable?(char)
-      if char =~ /\r/
-        true
-      else
-        false
-      end
+    def shift_word
+      word = @text_food.match(/\A\b[[:alnum:]]+\b/).to_s
+      @text_food = @text_food[word.size..-1]
+      word
     end
 
-    def is_literal?(char)
-      if char =~ /\n/
-        true
-      else
-        false
-      end
+    def shift_char
+      chr = @text_food[0]
+      @text_food = @text_food[1..-1]
+      chr
     end
 
-    def is_a_number?(char)
-      if char =~ /\A[0-9\u20AC$=+-]\z/
-        true
-      else
-        false
-      end
-    end
-
-    def is_a_capital?(char)
-      if char =~ /\A[A-ZÀ-ÖØ-Ý]\z/
-        true
-      else
-        false
-      end
-    end
   end
 
 end

@@ -16,7 +16,7 @@ describe DIDV::InkText, "to_braille" do
 
   it "returns the expected braille to mixed string" do
     ink_text = DIDV::InkText.new("1s1 ?iT ?")
-    foo = "001111100000011100001111100000000000010001010100000101011110000000010001"
+    foo = "001111100000000010011100001111100000000000010001010100000101011110000000010001"
     expect( ink_text.to_braille.content ).to eq( foo )
   end
 
