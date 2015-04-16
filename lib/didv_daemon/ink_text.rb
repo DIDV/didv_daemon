@@ -71,7 +71,6 @@ module DIDV
 
         end
 
-        # end
       end
 
       Braille.new(content)

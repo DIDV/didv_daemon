@@ -24,7 +24,31 @@ module DIDV
       cells.each block
     end
 
+    def lines(size=10)
+      content = @content.split("\n")
+      pins_size = 6 * size
+
+      # fill ended lines with spaces
+      content.map! { |l| l = fill_line(l,pins_size)  }
+      content = content.join.chars
+
+      # split in lines
+      lines = []
+      until content.empty?
+        lines << Braille.new(content.shift(6*size).join)
+      end
+
+      # fill last line if needed
+      # lines.last << "0" * (pins_size % lines.last.size)
+
+      lines
+    end
+
     private
+
+    def fill_line(line,size)
+      line << "0" * ( size  - ( line.size % size ) )
+    end
 
     def valid?(content)
       if content.nil? or
