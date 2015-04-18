@@ -56,6 +56,11 @@ module DIDV
 
         if cell == "\n"
           text << "\n"
+        elsif cell == "000101"
+          if cell + braille_cells[0..4].join == DICT['EOT']
+            text << "\n"
+            braille_cells.shift(5)
+          end
         else
           chr = DICT.key cell
           unless chr

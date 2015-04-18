@@ -35,3 +35,12 @@ describe DIDV::Braille, "lines" do
   end
 
 end
+
+describe DIDV::Braille, "to_text" do
+
+  it "should return a EOL to a EOT" do
+    br = DIDV::Braille.new('000101010101000101010101000101010101')
+    expect(br.to_text).to eq("\n")
+  end
+
+end
