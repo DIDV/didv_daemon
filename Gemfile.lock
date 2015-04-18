@@ -26,6 +26,7 @@ GEM
     rspec-support (3.1.2)
     rubyzip (1.1.6)
     slop (3.6.0)
+    state_machine (1.2.0)
 
 PLATFORMS
   ruby
@@ -36,3 +37,4 @@ DEPENDENCIES
   pry
   rspec
   rubyzip (~> 1.1.6)
+  state_machine
