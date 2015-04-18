@@ -1,7 +1,7 @@
 module DIDV
 
   def self.draw_lines(text)
-    to_braille(text).each_line { |l| puts "#{l.draw_cells}\n" }
+    to_braille(text).each_line { |l| puts "#{ l.to_text.chars.join("    ") }\n#{l.draw_cells}\n" }
   end
 
   class Braille
@@ -56,11 +56,9 @@ module DIDV
 
         if cell == "\n"
           text << "\n"
-        elsif cell == "000101"
-          if cell + braille_cells[0..4].join == DICT['EOT']
+        elsif (cell == "000101") and (cell + braille_cells[0..4].join == DICT['EOT'])
             text << "\n"
             braille_cells.shift(5)
-          end
         else
           chr = DICT.key cell
           unless chr
@@ -68,7 +66,8 @@ module DIDV
             chr = DICT.key(cell+next_cell)
           end
           case chr
-          when "number" then flag="number"
+          when "number"
+            flag="number"
           when "uppercase"
             if flag == "upcase_char"
               flag = "upcase_word"
@@ -87,7 +86,7 @@ module DIDV
             when "upcase_word" then new_chr = chr.upcase
             when " " then flag=nil
             end
-            text << new_chr
+            text << new_chr if new_chr
           end
         end
       end

@@ -55,7 +55,7 @@ module DIDV
             elsif last_char_was_a_number
               content << DICT['lowercase']
             end
-            content << DICT[chr.downcase]
+            content << DICT[chr.downcase] if DICT[chr.downcase]
             last_char_was_a_number = false
           end
 

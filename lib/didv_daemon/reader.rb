@@ -31,7 +31,7 @@ module DIDV
 
     def load_current_offset
       if File.exist? @offset_path
-        @offset = File.read @offset_path
+        @offset = File.read(@offset_path).to_i
       else
         @offset = 0
       end
