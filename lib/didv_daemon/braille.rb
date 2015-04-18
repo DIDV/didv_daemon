@@ -80,8 +80,6 @@ module DIDV
             end
             text << new_chr
           end
-
-
         end
       end
       text
@@ -108,7 +106,11 @@ module DIDV
       content_chars = content.chars
       grouped_points = []
       while( content_chars.any? )
-        grouped_points << content_chars.shift(points).join
+        if content_chars.first == "\n"
+          grouped_points << content_chars.shift
+        else
+          grouped_points << content_chars.shift(points).join
+        end
       end
       grouped_points
     end
