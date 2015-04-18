@@ -63,7 +63,7 @@ module DIDV
 
       end
 
-      Braille.new(content)
+      Braille.new(content.gsub(/\n{3,}/,DICT['EOT'] + "\n"))
 
     end
 

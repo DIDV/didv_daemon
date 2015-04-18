@@ -47,4 +47,10 @@ describe DIDV::InkText, "to_braille" do
     expect( ink_text.to_braille.content ).to eq( foo )
   end
 
+  it "transform three or more EOLs in a EOT" do
+    ink_text = DIDV::InkText.new("\n\n\n\n\n")
+    foo = "000101010101000101010101000101010101\n"
+    expect( ink_text.to_braille.content ).to eq( foo )
+  end
+
 end
