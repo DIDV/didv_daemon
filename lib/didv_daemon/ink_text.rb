@@ -10,7 +10,7 @@ module DIDV
     attr_accessor :text
 
     def initialize(text)
-      @text = text.gsub(" \n "," \n");
+      @text = text.gsub(" \n "," \n").gsub(/\n\ +/,"\n");
       @flags = {
         number: false
       }

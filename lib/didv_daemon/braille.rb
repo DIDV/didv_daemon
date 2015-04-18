@@ -1,29 +1,8 @@
 module DIDV
 
-  # def self.draw_text(text)
-  #   to_braille(text).cells
-  # end
-
   def self.draw_lines(text)
     to_braille(text).each_line { |l| puts "#{l.draw_cells}\n" }
   end
-
-  # def self.draw_cells(cells)
-  #   signed_cells = []
-  #   cells.each { |cell| signed_cells << signed_cell(cell) }
-  #   draw = ""
-  #   (0..2).each do |line|
-  #     signed_cells.each do |signed_cell|
-  #       draw << "#{signed_cell[line]} #{signed_cell[line+3]}  "
-  #     end
-  #     draw << "\n"
-  #   end
-  #   draw
-  #
-  #
-  #
-  # end
-
 
   class Braille
 
