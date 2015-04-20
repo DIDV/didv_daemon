@@ -5,7 +5,7 @@ module DIDV
     attr_accessor :offset,:limit
     attr_reader :offset_path
 
-    def initialize(path,limit=1024)
+    def initialize(path,restart=false,limit=1024)
       if epub? path
         @ink_text = InkText.new(EPub.new(path).text)
       else
@@ -13,12 +13,23 @@ module DIDV
       end
       @limit = limit
       @offset_path = File.join(File.dirname(path),".#{File.basename(path)}.didv")
-      load_current_offset
+      if restart
+        @offset = 0
+      else
+        load_current_offset
+      end
     end
 
     def batch
-      batch = @ink_text.text[@offset,@limit]
-      update_offset unless batch.empty?
+      batch = InkText.new(@ink_text.text[@offset,@limit])
+      update_offset unless batch.text.empty?
+      batch
+    end
+
+    def rewind_batch
+      @offset = @offset - (2*@limit)
+      batch = InkText.new(@ink_text.text[@offset,@limit])
+      update_offset unless batch.text.empty?
       batch
     end
 
