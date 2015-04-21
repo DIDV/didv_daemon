@@ -48,7 +48,7 @@ module DIDV
               content << DICT['number']
               last_char_was_a_number = true
             end
-            content << DICT['numbers'][chr]
+            content << DICT['numbers'][chr] if DICT['numbers'][chr]
           when /([[:alpha:]]|[[:punct:]])/
             if chr =~ /\A[A-ZÀ-ÖØ-Ý]\z/
               content << DICT['uppercase']

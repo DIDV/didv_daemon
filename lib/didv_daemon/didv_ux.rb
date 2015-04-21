@@ -59,10 +59,10 @@ module DIDV
       when 'e' #enter
         case menu
         when 'ler'
-          @filename = option[2..-1]
+          @filename = "./tmp/" + option[2..-1]
           seleciona_ler_modo
         when 'principal','ler_modo'
-          self.send "seleciona_#{option}"
+          self.send "seleciona_#{option.gsub(" ","_")}"
         end
       when 's' #esc
         case menu
@@ -71,6 +71,7 @@ module DIDV
         end
       end
       DIDV::draw_lines option;
+      menu
     end
 
     def option
@@ -96,7 +97,7 @@ module DIDV
 
     # options sao os arquivos validos no local de costume
     def load_valid_files_list
-      @options = Dir.glob('./tmp/*.{txt,epub}').map { |f| "& #{f}" }
+      @options = Dir.glob('./tmp/*.{txt,epub}').map { |f| "& #{File.basename(f)}" }
     end
 
     # abre o texto que sera lido

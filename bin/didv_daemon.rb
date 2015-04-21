@@ -5,14 +5,15 @@ module DIDV
 
     def post_init
       @ux = UX.new
-      sleep 1
-      @ux.entra_menu
-      DIDV::send_data @ux.option if @ux.option
+      DIDV::draw_lines "DIDV"
+      sleep 3
+      DIDV::draw_lines @ux.option
     end
 
     def receive_data(input)
-      @ux.keyboard_input input.chomp
-      DIDV::send_data @ux.option if @ux.option
+      response = @ux.get_input input[0]
+      # close_connection if response == "desligar"
+      EventMachine.stop if response == "desligar"
     end
 
   end
