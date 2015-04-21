@@ -1,5 +1,14 @@
 require_relative '../lib/didv_daemon' unless defined?(DIDV)
 
+describe DIDV::InkText, "new" do
+  it "should remove stupid spaces" do
+    ink_text = DIDV::InkText.new(" \n ")
+    expect( ink_text.text ).to eq(" \n")
+    ink_text = DIDV::InkText.new("\n \n   \n")
+    expect( ink_text.text ).to eq("\n\n\n")
+  end
+end
+
 describe DIDV::InkText, "to_braille" do
 
   it "returns the expected braille to a lower case letters-only string" do
@@ -35,6 +44,12 @@ describe DIDV::InkText, "to_braille" do
   it "should keep new line escapes" do
     ink_text = DIDV::InkText.new("\n")
     foo = "\n"
+    expect( ink_text.to_braille.content ).to eq( foo )
+  end
+
+  it "transform three or more EOLs in a EOT" do
+    ink_text = DIDV::InkText.new("\n\n\n\n\n")
+    foo = "000101010101000101010101000101010101\n"
     expect( ink_text.to_braille.content ).to eq( foo )
   end
 

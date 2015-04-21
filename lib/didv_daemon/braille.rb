@@ -1,5 +1,9 @@
 module DIDV
 
+  def self.draw_lines(text)
+    to_braille(text).each_line { |l| puts "#{ l.to_text.chars.join("    ") }\n#{l.draw_cells}\n" }
+  end
+
   class Braille
 
     attr_accessor :content
@@ -52,6 +56,9 @@ module DIDV
 
         if cell == "\n"
           text << "\n"
+        elsif (cell == "000101") and (cell + braille_cells[0..4].join == DICT['EOT'])
+            text << "\n"
+            braille_cells.shift(5)
         else
           chr = DICT.key cell
           unless chr
@@ -59,7 +66,8 @@ module DIDV
             chr = DICT.key(cell+next_cell)
           end
           case chr
-          when "number" then flag="number"
+          when "number"
+            flag="number"
           when "uppercase"
             if flag == "upcase_char"
               flag = "upcase_word"
@@ -78,17 +86,41 @@ module DIDV
             when "upcase_word" then new_chr = chr.upcase
             when " " then flag=nil
             end
-            text << new_chr
+            text << new_chr if new_chr
           end
         end
       end
       text
     end
 
+    def draw_text(text)
+      draw_cells to_braille(text).cells
+    end
+
+    def draw_lines(text)
+      to_braille(text).each_line { |l| puts "#{draw_cells l.cells}\n" }
+    end
+
+    def draw_cells
+      signed_cells = []
+      cells.each { |cell| signed_cells << signed_cell(cell) }
+      draw = ""
+      (0..2).each do |line|
+        signed_cells.each do |signed_cell|
+          draw << "#{signed_cell[line]} #{signed_cell[line+3]}  "
+        end
+        draw << "\n"
+      end
+      draw
+    end
+
     private
 
     def fill_line(line,size)
-      line << "0" * ( size  - ( line.size % size ) )
+      unless (line.size % size == 0) and (line.size > 0)
+        line << "0" * ( size  - ( line.size % size ) )
+      end
+      line
     end
 
     def valid?(content)
@@ -113,6 +145,14 @@ module DIDV
         end
       end
       grouped_points
+    end
+
+    def signed_cell(cell)
+      pins = cell.chars
+      pins.each_index do |index|
+        pins[index] = pins[index] == '1' ? 'o' : '-'
+      end
+      pins
     end
 
 

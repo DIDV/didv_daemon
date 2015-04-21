@@ -10,7 +10,7 @@ module DIDV
     attr_accessor :text
 
     def initialize(text)
-      @text = text
+      @text = text.gsub(" \n "," \n").gsub(/\n\ +/,"\n");
       @flags = {
         number: false
       }
@@ -55,7 +55,7 @@ module DIDV
             elsif last_char_was_a_number
               content << DICT['lowercase']
             end
-            content << DICT[chr.downcase]
+            content << DICT[chr.downcase] if DICT[chr.downcase]
             last_char_was_a_number = false
           end
 
@@ -63,7 +63,7 @@ module DIDV
 
       end
 
-      Braille.new(content)
+      Braille.new(content.gsub(/\n{3,}/,DICT['EOT'] + "\n"))
 
     end
 
