@@ -117,7 +117,7 @@ module DIDV
     private
 
     def fill_line(line,size)
-      unless line.size % size == 0
+      unless (line.size % size == 0) and (line.size > 0)
         line << "0" * ( size  - ( line.size % size ) )
       end
       line

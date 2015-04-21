@@ -27,7 +27,7 @@ module DIDV
     end
 
     def rewind_batch
-      @offset = @offset - (2*@limit)
+      @offset = @offset - (2*@limit) unless @offset == 0
       batch = InkText.new(@ink_text.text[@offset,@limit])
       update_offset unless batch.text.empty?
       batch
