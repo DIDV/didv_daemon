@@ -2,13 +2,9 @@
 
 module DIDV
 
-  def self.send_data(data)
-    puts DIDV::to_braille(data).each_line { |l| puts l.content }
-  end
-
   class UX
 
-    attr_accessor :line_index
+    attr_accessor :line_index, :options
 
     state_machine :menu, initial: :principal do
 
@@ -62,6 +58,7 @@ module DIDV
         when 'ler_texto' then seleciona_ler
         end
       end
+      DIDV::draw_lines option;
     end
 
     def option
@@ -83,11 +80,11 @@ module DIDV
     end
 
     def load_valid_files_list
-      @options = Dir.glob('./tmp/*.{txt,epub}')
+      @options = Dir.glob('./tmp/*.{txt,epub}').map { |f| "& #{f}" }
     end
 
     def load_text_to_read
-      @text = Reader.new(option,false,1000)
+      @text = Reader.new(option[2..-1])
       load_batch_lines
     end
 
@@ -97,16 +94,28 @@ module DIDV
     end
 
     def load_rewind_batch_lines
-      @options = @text.batch.to_braille.lines.map { |l| l.to_text }
+      @options = @text.rewind_batch.to_braille.lines.map { |l| l.to_text }
       @line_index = @options.size
     end
 
     def line_forth
-      next_option
+      if @line_index < @options.size
+        next_option
+        @line_index = @line_index + 1
+      else
+        load_batch_lines
+      end
     end
 
     def line_back
-      last_option
+      if @line_index > 0
+        last_option
+        @line_index = @line_index - 1
+      else
+        load_rewind_batch_lines
+        last_option
+        @line_index = @options.size - 1
+      end
     end
 
   end
