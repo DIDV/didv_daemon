@@ -39,7 +39,7 @@ module DIDV
 
     end
 
-     def initialize
+    def initialize
        super
        load_options
     end
@@ -59,7 +59,7 @@ module DIDV
       when 'e' #enter
         case menu
         when 'ler'
-          @filename = "./tmp/" + option[2..-1]
+          @filename = @filelist[option]
           seleciona_ler_modo
         when 'principal','ler_modo'
           self.send "seleciona_#{option.gsub(" ","_")}"
@@ -97,7 +97,11 @@ module DIDV
 
     # options sao os arquivos validos no local de costume
     def load_valid_files_list
-      @options = Dir.glob('./tmp/*.{txt,epub}').map { |f| "& #{File.basename(f)}" }
+      @filelist = {}
+      Dir.glob('/media/*/*.{txt,epub}').each do |f|
+        @filelist["& #{File.basename(f)}"] = f
+      end
+      @options = @filelist.keys
     end
 
     # abre o texto que sera lido
