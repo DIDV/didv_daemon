@@ -8,12 +8,13 @@ module DIDV
       DIDV::draw_lines "DIDV"
       sleep 3
       DIDV::draw_lines @ux.option
+      send_data 'waiting'
     end
 
     def receive_data(input)
-      response = @ux.get_input input[0]
-      close_connection if response == "desligar"
+      response = @ux.get_input input
       EventMachine.stop if response == "desligar"
+      send_data 'waiting'
     end
 
   end

@@ -46,7 +46,7 @@ module DIDV
     def load_text
       text = ""
       @spine.each do |item_id|
-        item_path = File.dirname(content_entry_path) + "/#{item_href(item_id)}"
+        item_path =(File.dirname(content_entry_path) + "/#{item_href(item_id)}").gsub("./","")
         text += Nokogiri::HTML(@epub.read(item_path)).text
       end
       text
