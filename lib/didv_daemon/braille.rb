@@ -42,6 +42,10 @@ module DIDV
       lines
     end
 
+    def hex
+      cells.map { |cell| "00#{cell}".to_i(2).chr }.join
+    end
+
     def each_line(size=10, &block)
       lines.each &block
     end

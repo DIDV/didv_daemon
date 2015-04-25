@@ -39,7 +39,7 @@ module DIDV
 
     end
 
-     def initialize
+    def initialize
        super
        load_options
     end

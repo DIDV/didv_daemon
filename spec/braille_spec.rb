@@ -44,3 +44,11 @@ describe DIDV::Braille, "to_text" do
   end
 
 end
+
+describe DIDV::Braille, "hex" do
+  it "should return the expected hex" do
+    expected_hex = "8\x144\"\x00\x14\x1C\x006**&"
+    br = DIDV::to_braille "life is good"
+    expect(br.hex).to eq(expected_hex)
+  end
+end

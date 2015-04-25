@@ -12,7 +12,7 @@ module DIDV
 
     def receive_data(input)
       response = @ux.get_input input[0]
-      # close_connection if response == "desligar"
+      close_connection if response == "desligar"
       EventMachine.stop if response == "desligar"
     end
 
