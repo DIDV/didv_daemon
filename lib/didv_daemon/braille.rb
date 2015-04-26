@@ -1,14 +1,25 @@
 module DIDV
 
+  module BrailleUtils
+    def fill_line(line,size)
+      unless (line.size % size == 0) and (line.size > 0)
+        line << "0" * ( size  - ( line.size % size ) )
+      end
+      line
+    end
+  end
+
   def self.draw_lines(text)
     to_braille(text).each_line { |l| puts "#{ l.to_text.chars.join("    ") }\n#{l.draw_cells}\n" }
   end
 
   class Braille
 
+    include BrailleUtils
+
     attr_accessor :content
 
-    def initialize(new_content = nil, *params)
+    def initialize(new_content = "", *params)
       self.content = new_content
     end
 
@@ -118,14 +129,14 @@ module DIDV
       draw
     end
 
-    private
+    # def fill_line(line,size)
+    #   unless (line.size % size == 0) and (line.size > 0)
+    #     line << "0" * ( size  - ( line.size % size ) )
+    #   end
+    #   line
+    # end
 
-    def fill_line(line,size)
-      unless (line.size % size == 0) and (line.size > 0)
-        line << "0" * ( size  - ( line.size % size ) )
-      end
-      line
-    end
+    private
 
     def valid?(content)
       if content.nil? or
