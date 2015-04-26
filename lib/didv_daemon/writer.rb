@@ -4,22 +4,26 @@ module DIDV
 
     include BrailleUtils
 
-    attr_accessor :text
+    # attr_accessor :text
 
     def initialize(filename)
       @filename = filename
       initial_content filename
-      @index = @text.cells.size - 1
+      @index = @text.cells.size
     end
 
-    def append_braille_char braille_char
-      @text.content << braille_char if valid_braille_char?(braille_char)
-      @index = @index + 1
+    def insert_braille_char braille_char
+      cells = @text.cells
+      cells.insert(@index,braille_char)
+      @text.content = cells.join
+      increment_index
     end
 
     def delete_braille_char
-      @text.cells.last.size.times { @text.content.chop! }
-      @index = @index - 1
+      cells = @text.cells
+      cells.delete_at(@index)
+      @text.content = cells.join
+      decrement_index if @index == @text.cells.size
     end
 
     def index_position
@@ -28,10 +32,25 @@ module DIDV
       [row,column]
     end
 
+    def decrement_index
+      @index = @index - 1 unless @index == 0
+    end
+
+    def increment_index
+      @index = @index + 1 unless @index == @text.cells.size
+    end
+
     def current_line
-      @row,@column = index_position
-      line = @text.cells[10 * @row,(@column+1)].join
+      row,column = index_position
+      line = @text.cells[10 * row,10].join
       Braille.new(fill_line(line,60))
+    end
+
+    def blink_current_line
+      cells = current_line.cells
+      row,column = index_position
+      cells[column] = "000000"
+      Braille.new(cells.join)
     end
 
     private
