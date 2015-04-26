@@ -53,6 +53,16 @@ module DIDV
       Braille.new(cells.join)
     end
 
+    def save!
+      posfix = 0
+      while File.exist? "tmp/#{@filename}#{posfix}.txt"
+        posfix = posfix + 1
+      end
+      File.open("tmp/#{@filename}#{posfix}.txt",'w') do |f|
+        f.puts @text.to_text
+      end
+    end
+
     private
 
     def valid_braille_char? braille_char
