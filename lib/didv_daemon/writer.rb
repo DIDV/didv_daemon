@@ -4,12 +4,10 @@ module DIDV
 
     include BrailleUtils
 
-    # attr_accessor :text
-
     def initialize(filename)
       @filename = filename
       initial_content filename
-      @index = @text.cells.size
+      go_to_eot
     end
 
     def insert_braille_char braille_char
@@ -17,6 +15,7 @@ module DIDV
       cells.insert(@index,braille_char)
       @text.content = cells.join
       increment_index
+      current_line
     end
 
     def delete_braille_char
@@ -24,6 +23,7 @@ module DIDV
       cells.delete_at(@index)
       @text.content = cells.join
       decrement_index if @index == @text.cells.size
+      current_line
     end
 
     def index_position
@@ -34,10 +34,23 @@ module DIDV
 
     def decrement_index
       @index = @index - 1 unless @index == 0
+      current_line
     end
 
     def increment_index
       @index = @index + 1 unless @index == @text.cells.size
+      current_line
+    end
+
+    def go_to_eot
+      @index = @text.cells.size
+      current_line
+    end
+
+    def end_of_line
+      column = index_position[1]
+      (10 - column ).times { insert_braille_char "000000" }
+      current_line
     end
 
     def current_line
@@ -66,7 +79,8 @@ module DIDV
     private
 
     def valid_braille_char? braille_char
-      braille_char =~ /\A[01]{6}\z/
+      (braille_char =~ /\A[01]{6}\z/) or
+      (braille_char == "\n")
     end
 
     def initial_content content

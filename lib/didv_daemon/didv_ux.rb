@@ -15,17 +15,10 @@ module DIDV
       after_transition on: :seleciona_do_inicio, do: :load_text_to_read_from_beginning
       after_transition on: :seleciona_continuar, do: :load_text_to_read
 
+      # ler
+
       event :seleciona_ler do
         transition [:principal,:do_inicio,:continuar] => :ler
-      end
-      event :seleciona_escrever do
-        transition :principal => :escrever
-      end
-      event :seleciona_desligar do
-        transition :principal => :desligar
-      end
-      event :seleciona_principal do
-        transition [:ler,:escrever] => :principal
       end
       event :seleciona_ler_modo do
         transition :ler => :ler_modo
@@ -37,6 +30,27 @@ module DIDV
         transition :ler_modo => :do_inicio
       end
 
+      # escrever
+
+      event :seleciona_escrever do
+        transition :principal => :escrever
+      end
+      event :seleciona_escrevendo do
+        transition :escrever => :escrevendo
+      end
+      event :seleciona_salvar do
+        transition :escrevendo => :salvar
+      end
+
+      event :seleciona_desligar do
+        transition :principal => :desligar
+      end
+
+      event :seleciona_principal do
+        transition [:ler,:escrever,:salvar] => :principal
+      end
+
+
     end
 
     def initialize
@@ -44,33 +58,78 @@ module DIDV
        load_options
     end
 
-    def get_input input # tratamento de entrada de dados
+
+    # tratamento de entrada de dados
+
+    def get_input input
+
       case input
-      when 'a' #avanca
+
+      # avancar
+      when 'a'
         case menu
-        when 'do_inicio','continuar' then line_forth
+        when 'do_inicio',
+             'continuar' then line_forth
+        when 'escrevendo' then next_char
         else next_option
         end
-      when 'v' #volta
+
+      # voltar
+      when 'v'
         case menu
-        when 'do_inicio','continuar' then line_back
+        when 'do_inicio',
+             'continuar' then line_back
+        when 'escrevendo' then last_char
         else last_option
         end
-      when 'e' #enter
+
+      # fim
+      when 'f'
         case menu
+        when 'escrevendo' then end_of_text
+        end
+
+      # enter
+      when 'e'
+        case menu
+
         when 'ler'
           @filename = "./tmp/" + option[2..-1]
           seleciona_ler_modo
+
         when 'principal','ler_modo'
           self.send "seleciona_#{option.gsub(" ","_")}"
+
+        when 'escrever'
+          @writer = Writer.new('nota')
+          seleciona_escrevendo
+
+        when 'escrevendo' then end_of_line
         end
-      when 's' #esc
+
+      # backspace
+      when 'b'
+        case menu
+        when 'escrevendo' then delete_char
+        end
+
+      # esc
+      when 's'
         case menu
         when 'ler','escrever' then seleciona_principal
-        when 'ler_modo','do_inicio','continuar' then seleciona_ler
+        when 'ler_modo',
+             'do_inicio',
+             'continuar' then seleciona_ler
+        when 'escrevendo' then seleciona_salvar
+        end
+
+      # inputs de dados
+      else
+        case menu
+        when 'escrevendo' then insert_char(input)
         end
       end
-      DIDV::draw_lines option;
+      DIDV::draw_lines option unless menu == 'escrevendo' ;
       menu
     end
 
@@ -148,6 +207,39 @@ module DIDV
         last_option
         @line_index = @options.size - 1
       end
+    end
+
+
+    #escrever
+
+    def next_char
+      br = @writer.increment_index
+      puts br.draw_cells
+    end
+
+    def last_char
+      br = @writer.decrement_index
+      puts br.draw_cells
+    end
+
+    def end_of_text
+      br = @writer.go_to_eot
+      puts br.draw_cells
+    end
+
+    def end_of_line
+      br = @writer.end_of_line
+      puts br.draw_cells
+    end
+
+    def delete_char
+      br = @writer.delete_braille_char
+      puts br.draw_cells
+    end
+
+    def insert_char(braille_char)
+      br = @writer.insert_braille_char braille_char
+      puts br.draw_cells
     end
 
   end

@@ -1,5 +1,3 @@
-require_relative '../lib/didv_daemon'
-
 module DIDV
 
   # lib/display.rb
@@ -8,7 +6,7 @@ module DIDV
 
     def send_hex(hex)
       data = packetize_data(hex)
-      send_data datas
+      send_data data
     end
 
     def packetize_data(data)
