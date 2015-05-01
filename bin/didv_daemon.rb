@@ -1,13 +1,22 @@
 require_relative '../lib/didv_daemon'
 
 module DIDV
-  module Daemon
+  class Daemon < EM::Connection
+
+    def initialize(queue)
+      @ux = UX.new
+      
+      @queue.push(DIDV::to_braille("DIDV").hex)
+      foo = Proc.new do |msg|
+        # send_data(msg)
+        puts msg
+        queue.pop &foo
+      end
+      queue.pop &foo
+    end
 
     def post_init
-      @ux = UX.new
-      DIDV::draw_lines "DIDV"
-      sleep 3
-      DIDV::draw_lines @ux.option
+      send_data(DIDV::draw_lines @ux.option)
     end
 
     def receive_data(input)

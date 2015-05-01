@@ -36,7 +36,7 @@ module DIDV
         transition :principal => :escrever
       end
       event :seleciona_escrevendo do
-        transition :escrever => :escrevendo
+        transition [:escrever,:salvar] => :escrevendo
       end
       event :seleciona_salvar do
         transition :escrevendo => :salvar
@@ -56,11 +56,22 @@ module DIDV
     def initialize
        super
        load_options
+
+    end
+
+    # retorna hex pra ser despachado
+
+    def get_lines
+      unless menu == "escrevendo"
+        option.hex_lines
+      else
+        @writer.current_line
+      end
     end
 
 
-    # tratamento de entrada de dados
 
+    # tratamento de entrada de dados
     def get_input input
 
       case input
@@ -94,17 +105,21 @@ module DIDV
         case menu
 
         when 'ler'
-          @filename = "./tmp/" + option[2..-1]
+          @filename = "./tmp/" + options.first[2..-1]
           seleciona_ler_modo
 
-        when 'principal','ler_modo'
-          self.send "seleciona_#{option.gsub(" ","_")}"
+        when 'principal',
+             'ler_modo'
+          self.send "seleciona_#{options.first.gsub(" ","_")}"
 
         when 'escrever'
           @writer = Writer.new('nota')
           seleciona_escrevendo
 
         when 'escrevendo' then end_of_line
+
+        when 'salvar' then save_action
+
         end
 
       # backspace
@@ -120,7 +135,9 @@ module DIDV
         when 'ler_modo',
              'do_inicio',
              'continuar' then seleciona_ler
-        when 'escrevendo' then seleciona_salvar
+        when 'escrevendo'
+          save_options
+          seleciona_salvar
         end
 
       # inputs de dados
@@ -129,12 +146,11 @@ module DIDV
         when 'escrevendo' then insert_char(input)
         end
       end
-      DIDV::draw_lines option unless menu == 'escrevendo' ;
-      menu
+
     end
 
     def option
-      @options.first
+      DIDV::to_braille(@options.first)
     end
 
     private
@@ -213,33 +229,43 @@ module DIDV
     #escrever
 
     def next_char
-      br = @writer.increment_index
-      puts br.draw_cells
+      @writer.increment_index
     end
 
     def last_char
-      br = @writer.decrement_index
-      puts br.draw_cells
+      @writer.decrement_index
     end
 
     def end_of_text
-      br = @writer.go_to_eot
-      puts br.draw_cells
+      @writer.go_to_eot
     end
 
     def end_of_line
-      br = @writer.end_of_line
-      puts br.draw_cells
+      @writer.end_of_line
     end
 
     def delete_char
-      br = @writer.delete_braille_char
-      puts br.draw_cells
+      @writer.delete_braille_char
     end
 
     def insert_char(braille_char)
-      br = @writer.insert_braille_char braille_char
-      puts br.draw_cells
+      @writer.insert_braille_char braille_char
+    end
+
+    def save_options
+      @options = [ 'salvar', 'nao salvar', 'cancelar' ]
+    end
+
+    def save_action
+      case @options.first
+      when 'salvar'
+        @writer.save!
+        seleciona_principal
+      when 'nao salvar'
+        seleciona_principal
+      else
+        seleciona_escrevendo
+      end
     end
 
   end
