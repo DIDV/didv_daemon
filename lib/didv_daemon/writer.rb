@@ -15,7 +15,6 @@ module DIDV
       cells.insert(@index,braille_char)
       @text.content = cells.join
       increment_index
-      current_line
     end
 
     def delete_braille_char
@@ -23,7 +22,6 @@ module DIDV
       cells.delete_at(@index)
       @text.content = cells.join
       decrement_index if @index == @text.cells.size
-      current_line
     end
 
     def index_position
@@ -34,36 +32,25 @@ module DIDV
 
     def decrement_index
       @index = @index - 1 unless @index == 0
-      current_line
     end
 
     def increment_index
       @index = @index + 1 unless @index == @text.cells.size
-      current_line
     end
 
     def go_to_eot
       @index = @text.cells.size
-      current_line
     end
 
     def end_of_line
       column = index_position[1]
       (10 - column ).times { insert_braille_char "000000" }
-      current_line
     end
 
     def current_line
       row,column = index_position
       line = @text.cells[10 * row,10].join
-      Braille.new(fill_line(line,60))
-    end
-
-    def blink_current_line
-      cells = current_line.cells
-      row,column = index_position
-      cells[column] = "000000"
-      Braille.new(cells.join)
+      Braille.new(fill_line(line,60)).hex_lines
     end
 
     def save!
