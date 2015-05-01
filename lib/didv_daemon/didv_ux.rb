@@ -15,17 +15,10 @@ module DIDV
       after_transition on: :seleciona_do_inicio, do: :load_text_to_read_from_beginning
       after_transition on: :seleciona_continuar, do: :load_text_to_read
 
+      # ler
+
       event :seleciona_ler do
         transition [:principal,:do_inicio,:continuar] => :ler
-      end
-      event :seleciona_escrever do
-        transition :principal => :escrever
-      end
-      event :seleciona_desligar do
-        transition :principal => :desligar
-      end
-      event :seleciona_principal do
-        transition [:ler,:escrever] => :principal
       end
       event :seleciona_ler_modo do
         transition :ler => :ler_modo
@@ -37,45 +30,127 @@ module DIDV
         transition :ler_modo => :do_inicio
       end
 
+      # escrever
+
+      event :seleciona_escrever do
+        transition :principal => :escrever
+      end
+      event :seleciona_escrevendo do
+        transition [:escrever,:salvar] => :escrevendo
+      end
+      event :seleciona_salvar do
+        transition :escrevendo => :salvar
+      end
+
+      event :seleciona_desligar do
+        transition :principal => :desligar
+      end
+
+      event :seleciona_principal do
+        transition [:ler,:escrever,:salvar] => :principal
+      end
+
+
     end
 
     def initialize
        super
        load_options
+
     end
 
-    def get_input input # tratamento de entrada de dados
+    # retorna hex pra ser despachado
+
+    def get_lines
+      unless menu == "escrevendo"
+        option.hex_lines
+      else
+        @writer.current_line
+      end
+    end
+
+
+
+    # tratamento de entrada de dados
+    def get_input input
+
       case input
-      when 'a' #avanca
+
+      # avancar
+      when 'a'
         case menu
-        when 'do_inicio','continuar' then line_forth
+        when 'do_inicio',
+             'continuar' then line_forth
+        when 'escrevendo' then next_char
         else next_option
         end
-      when 'v' #volta
+
+      # voltar
+      when 'v'
         case menu
-        when 'do_inicio','continuar' then line_back
+        when 'do_inicio',
+             'continuar' then line_back
+        when 'escrevendo' then last_char
         else last_option
         end
-      when 'e' #enter
+
+      # fim
+      when 'f'
         case menu
-        when 'ler'
-          @filename = @filelist[option]
-          seleciona_ler_modo
-        when 'principal','ler_modo'
-          self.send "seleciona_#{option.gsub(" ","_")}"
+        when 'escrevendo' then end_of_text
         end
-      when 's' #esc
+
+      # enter
+      when 'e'
+        case menu
+
+        when 'ler'
+          @filename = @filelist[@options.first]
+          seleciona_ler_modo
+
+        when 'principal',
+             'ler_modo'
+             self.send "seleciona_#{@options.first.gsub(" ","_")}"
+
+        when 'escrever'
+          @writer = Writer.new('nota')
+          seleciona_escrevendo
+
+        when 'escrevendo' then end_of_line
+
+        when 'salvar' then save_action
+
+        end
+
+      # backspace
+      when 'b'
+        case menu
+        when 'escrevendo' then delete_char
+        end
+
+      # esc
+      when 's'
         case menu
         when 'ler','escrever' then seleciona_principal
-        when 'ler_modo','do_inicio','continuar' then seleciona_ler
+        when 'ler_modo',
+             'do_inicio',
+             'continuar' then seleciona_ler
+        when 'escrevendo'
+          save_options
+          seleciona_salvar
+        end
+
+      # inputs de dados
+      else
+        case menu
+        when 'escrevendo' then insert_char(input)
         end
       end
-      DIDV::draw_lines option;
-      menu
+
     end
 
     def option
-      @options.first
+      DIDV::to_braille(@options.first)
     end
 
     private
@@ -98,7 +173,7 @@ module DIDV
     # options sao os arquivos validos no local de costume
     def load_valid_files_list
       @filelist = {}
-      Dir.glob('/media/*/*.{txt,epub}').each do |f|
+      Dir.glob('./tmp/**/*.{txt,epub}').each do |f|
         @filelist["& #{File.basename(f)}"] = f
       end
       @options = @filelist.keys
@@ -151,6 +226,49 @@ module DIDV
         load_rewind_batch_lines
         last_option
         @line_index = @options.size - 1
+      end
+    end
+
+
+    #escrever
+
+    def next_char
+      @writer.increment_index
+    end
+
+    def last_char
+      @writer.decrement_index
+    end
+
+    def end_of_text
+      @writer.go_to_eot
+    end
+
+    def end_of_line
+      @writer.end_of_line
+    end
+
+    def delete_char
+      @writer.delete_braille_char
+    end
+
+    def insert_char(braille_char)
+      @writer.insert_braille_char braille_char
+    end
+
+    def save_options
+      @options = [ 'salvar', 'nao salvar', 'cancelar' ]
+    end
+
+    def save_action
+      case @options.first
+      when 'salvar'
+        @writer.save!
+        seleciona_principal
+      when 'nao salvar'
+        seleciona_principal
+      else
+        seleciona_escrevendo
       end
     end
 

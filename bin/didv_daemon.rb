@@ -1,25 +1,46 @@
 require_relative '../lib/didv_daemon'
 
 module DIDV
-  module Daemon
 
-    def post_init
-      @ux = UX.new
-      DIDV::draw_lines "DIDV"
-      sleep 3
-      DIDV::draw_lines @ux.option
-      send_data 'waiting'
+  class Daemon < EM::Connection
+
+    attr_reader :queue
+
+    def initialize(q)
+      @queue = q
+      @ux = DIDV::UX.new
     end
 
-    def receive_data(input)
-      response = @ux.get_input input
-      EventMachine.stop if response == "desligar"
-      send_data 'waiting'
+    def receive_data(data)
+      @ux.get_input(data[0])
+      @ux.get_lines.each do |line|
+        p line.bytes
+        @queue.push(line)
+      end
     end
 
   end
+
+  class DisplayConnection < EM::Connection
+    attr_reader :queue
+
+    def initialize(q)
+      @queue = q
+
+      cb = Proc.new do |msg|
+        send_data(msg)
+        q.pop &cb
+      end
+
+      q.pop &cb
+    end
+
+  end
+
 end
 
-EventMachine.run do
-  EventMachine.start_server '127.0.0.1',9001,DIDV::Daemon
+EM.run do
+  q = EM::Queue.new
+  EM.connect('127.0.0.1',9002,DIDV::DisplayConnection,q)
+  EM.start_server('127.0.0.1',9001,DIDV::Daemon,q)
 end
