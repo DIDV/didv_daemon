@@ -50,7 +50,11 @@ module DIDV
     def current_line
       row,column = index_position
       line = @text.cells[10 * row,10].join
-      Braille.new(fill_line(line,60)).hex_lines
+      Braille.new(fill_line(line,60)).hex_lines.map { |hex_line| hex_line + blink_hex }
+    end
+
+    def blink_hex
+      (0xb0 + index_position[1]).chr
     end
 
     def save!
