@@ -220,13 +220,17 @@ module DIDV
 
     # avanca linha de leitura
     def line_forth
+
+      @line_index +=  1
+
       # se nao for a ultima linha...
       if @line_index < @options.size
         next_option
-        @line_index = @line_index + 1
+
       # se for...
       else
         load_batch_lines
+
       end
     end
 
