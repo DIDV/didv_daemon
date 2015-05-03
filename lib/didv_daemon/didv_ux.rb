@@ -180,7 +180,7 @@ module DIDV
 
       @filelist = []
 
-      Dir.glob('./tmp/**/*.{txt,epub}').each do |f|
+      Dir.glob("#{TEXT_DIR}/**/*.{txt,epub}").each do |f|
 
         filename = "& " + File.basename(f)
         DIDV::to_braille(filename).each_line do |line|
