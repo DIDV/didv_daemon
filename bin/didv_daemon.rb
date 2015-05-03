@@ -17,7 +17,7 @@ module DIDV
     def receive_data(data)
       @ux.get_input(data[0])
       @ux.get_hexes.each do |hex|
-        # p hex.bytes.map{ |h| ( '0' * ( 6 % h.to_s(2).size ) ) + h.to_s(2) }
+        p hex.bytes.map{ |h| ( '0' * ( 6 % h.to_s(2).size ) ) + h.to_s(2) }
         @queue.push(hex)
       end
     end

@@ -62,10 +62,13 @@ module DIDV
     # retorna hex pra ser despachado
 
     def get_hexes
-      unless menu == "escrevendo"
-        option.hex_lines
-      else
+      case menu
+      when "ler"
+        @filelist.first[:line].hex_lines
+      when "escrevendo"
         @writer.current_line
+      else
+        option.hex_lines
       end
     end
 
@@ -80,6 +83,7 @@ module DIDV
         when 'do_inicio',
              'continuar' then line_forth
         when 'escrevendo' then next_char
+        when 'ler' then @filelist.rotate!
         else next_option
         end
 
@@ -89,6 +93,7 @@ module DIDV
         when 'do_inicio',
              'continuar' then line_back
         when 'escrevendo' then last_char
+        when 'ler' then @filelist.rotate! -1
         else last_option
         end
 
@@ -103,7 +108,7 @@ module DIDV
         case menu
 
         when 'ler'
-          @filename = @filelist[@options.first]
+          @filename = @filelist.first[:file]
           seleciona_ler_modo
 
         when 'principal',
@@ -170,14 +175,21 @@ module DIDV
     end
 
     # options sao os arquivos validos no local de costume
+
     def load_valid_files_list
-      @filelist = {}
+
+      @filelist = []
+
       Dir.glob('./tmp/**/*.{txt,epub}').each do |f|
-        @filelist["& #{File.basename(f)}"] = f
+
+        filename = "& " + File.basename(f)
+        DIDV::to_braille(filename).each_line do |line|
+          @filelist << { line: line, file: f }
+        end
+
       end
-      if @filelist.any?
-        @options = @filelist.keys
-      else
+
+      unless @filelist.any?
         seleciona_principal
       end
     end
