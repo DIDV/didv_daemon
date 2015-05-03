@@ -9,13 +9,16 @@ module DIDV
     def initialize(q)
       @queue = q
       @ux = DIDV::UX.new
+      @ux.get_hexes.each do |hex|
+        @queue.push(hex)
+      end
     end
 
     def receive_data(data)
       @ux.get_input(data[0])
-      @ux.get_lines.each do |line|
-        p line.bytes
-        @queue.push(line)
+      @ux.get_hexes.each do |hex|
+        # p hex.bytes.map{ |h| ( '0' * ( 6 % h.to_s(2).size ) ) + h.to_s(2) }
+        @queue.push(hex)
       end
     end
 
@@ -27,7 +30,11 @@ module DIDV
     def initialize(q)
       @queue = q
 
+      send_data DIDV::to_braille("DIDV").hex_lines[0]
+      sleep 3
+
       cb = Proc.new do |msg|
+        p msg
         send_data(msg)
         q.pop &cb
       end

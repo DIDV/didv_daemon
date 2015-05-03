@@ -61,15 +61,13 @@ module DIDV
 
     # retorna hex pra ser despachado
 
-    def get_lines
+    def get_hexes
       unless menu == "escrevendo"
         option.hex_lines
       else
         @writer.current_line
       end
     end
-
-
 
     # tratamento de entrada de dados
     def get_input input
@@ -114,6 +112,7 @@ module DIDV
 
         when 'escrever'
           @writer = Writer.new('nota')
+          @options = ['nota']
           seleciona_escrevendo
 
         when 'escrevendo' then end_of_line
@@ -176,7 +175,11 @@ module DIDV
       Dir.glob('./tmp/**/*.{txt,epub}').each do |f|
         @filelist["& #{File.basename(f)}"] = f
       end
-      @options = @filelist.keys
+      if @filelist.any?
+        @options = @filelist.keys
+      else
+        seleciona_principal
+      end
     end
 
     # abre o texto que sera lido
