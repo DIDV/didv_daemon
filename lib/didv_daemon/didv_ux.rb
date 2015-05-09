@@ -1,13 +1,13 @@
-# DIDV User Experience class
-
 module DIDV
 
+  # Classe de Experiência de Usuário do DIDV.
+  #
+  # Contém a máquina de estados controlada pelo teclado Braille que define as linhas
+  # Braille que serão exibidas no display Braille, e condições especiais de exibição
+  # dessas linhas.
   class UX
 
-    attr_accessor :line_index, :options, :filename
-
     # Maquina de Estados
-
     state_machine :menu, initial: :principal do
 
       after_transition on: [:seleciona_principal,:seleciona_ler_modo], do: :load_options
@@ -16,7 +16,6 @@ module DIDV
       after_transition on: :seleciona_continuar, do: :load_text_to_read
 
       # ler
-
       event :seleciona_ler do
         transition [:principal,:do_inicio,:continuar] => :ler
       end
@@ -31,7 +30,6 @@ module DIDV
       end
 
       # escrever
-
       event :seleciona_escrever do
         transition :principal => :escrever
       end
@@ -56,11 +54,9 @@ module DIDV
     def initialize
        super
        load_options
-
     end
 
-    # retorna hex pra ser despachado
-
+    # @return [String] hex pra ser despachado.
     def get_hexes
       case menu
       when "ler"
@@ -72,7 +68,9 @@ module DIDV
       end
     end
 
-    # tratamento de entrada de dados
+    # Tratamento de entrada de dados.
+    #
+    # @param input [String] dado de entrada.
     def get_input input
 
       case input
@@ -153,29 +151,29 @@ module DIDV
 
     end
 
+    # @return [String] opção selecionada atualmente.
     def option
       DIDV::to_braille(@options.first)
     end
 
     private
 
+    # Seleciona próxima opção.
     def next_option
       @options << @options.shift
     end
 
+    # Seleciona opção anterior.ss
     def last_option
       @options.unshift(@options.pop)
     end
 
-    # options: array de coisas que podem ser mandadas para a linha braille
-
-    # options sao as opcoes possiveis de acordo com a maquina de estados
+    # Carrega vetor 'options' com as transições possíveis para a máquina de estados.
     def load_options
       @options = menu_transitions.map { |foo| foo.to.gsub("_"," ") }
     end
 
-    # options sao os arquivos validos no local de costume
-
+    # Carrega o vetor 'filelist' com os arquivos legíveis no diretório de textos
     def load_valid_files_list
 
       @filelist = []
@@ -194,31 +192,33 @@ module DIDV
       end
     end
 
-    # abre o texto que sera lido
+    # Carrega texto que será lido a partir da última posição.
     def load_text_to_read
       @text = Reader.new(@filename)
       load_batch_lines
     end
 
-    # abre o texto que sera lido do inicio
+    # Carrega o texto que será lido a partir do início.
     def load_text_to_read_from_beginning
       @text = Reader.new(@filename,true)
       load_batch_lines
     end
 
-    # options sao as linhas do novo batch
+    # Carrega o próximo batch de texto no vetor 'options'
+    # e posiciona o line_index no início do batch.
     def load_batch_lines
       @options = @text.batch.to_braille.lines.map { |l| l.to_text }
       @line_index = 0
     end
 
-    # options sao as linhas do batch anterior
+    # Carrega o batch de texto anterior no vetor 'options' e
+    # posiciona o line_index no fim do batch.
     def load_rewind_batch_lines
       @options = @text.rewind_batch.to_braille.lines.map { |l| l.to_text }
       @line_index = @options.size
     end
 
-    # avanca linha de leitura
+    # Avança para próxima linha de leitura.
     def line_forth
 
       @line_index +=  1
@@ -234,7 +234,7 @@ module DIDV
       end
     end
 
-    # volta para a linha de leitura anterior
+    # Volta para última linha lida.
     def line_back
       # se nao for a primeira linha...
       if @line_index > 0
@@ -249,36 +249,45 @@ module DIDV
     end
 
 
-    #escrever
+    # escrever
 
+    # Avança cursor para próxima posição durante edição de texto.
     def next_char
       @writer.increment_index
     end
 
+    # Retorna cursor para posição anterior durante edição de texto.
     def last_char
       @writer.decrement_index
     end
 
+    # Posiciona cursor no fim do texto durante edição de texto.
     def end_of_text
       @writer.go_to_eot
     end
 
+    # Insere salto de linha durante edição de texto.
     def end_of_line
       @writer.end_of_line
     end
 
+    # Apaga char sob o cursor durante edição de texto.
     def delete_char
       @writer.delete_braille_char
     end
 
+    # Insere char na posição atual do cursor, avançando em uma posição todos chars
+    # posteriores, durante edição de texto.
     def insert_char(braille_char)
       @writer.insert_braille_char braille_char
     end
 
+    # Carrega o vetor 'options' com as opções de armazenamento do texto editado.
     def save_options
       @options = [ 'salvar', 'nao salvar', 'cancelar' ]
     end
 
+    # Executa a opção de armazenamento selecionada.
     def save_action
       case @options.first
       when 'salvar'

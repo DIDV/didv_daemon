@@ -1,9 +1,8 @@
 $:.unshift(File.dirname(__FILE__))
 
-
-# container de todas as classes, modulos e demais objetos
-# componentes do DIDV.
 module DIDV
+  # container de todas as classes, modulos e demais objetos
+  # componentes do DIDV.
 end
 
 require 'bundler/setup'
