@@ -1,5 +1,11 @@
 $:.unshift(File.dirname(__FILE__))
 
+
+# container de todas as classes, modulos e demais objetos
+# componentes do DIDV.
+module DIDV
+end
+
 require 'bundler/setup'
 require 'zip'
 require 'nokogiri'
