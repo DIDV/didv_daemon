@@ -137,7 +137,7 @@ module DIDV
             else
               flag = "upcase_char"
             end
-          when "downcase"
+          when "lowercase"
             flag = nil
           else
             new_chr = chr
