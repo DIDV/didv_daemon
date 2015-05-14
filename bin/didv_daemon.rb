@@ -9,17 +9,20 @@ module DIDV
     def initialize(q)
       @queue = q
       @ux = DIDV::UX.new
-      @ux.get_hexes.each do |hex|
-        @queue.push(hex)
-      end
+      send_data 'waiting'
     end
 
     def receive_data(data)
-      @ux.get_input(data[0])
-      @ux.get_hexes.each do |hex|
-        p hex.bytes.map{ |h| ( '0' * ( 6 % h.to_s(2).size ) ) + h.to_s(2) }
-        @queue.push(hex)
+      if is_valid? data
+        @ux.get_input(data)
+        p @ux.get_representation
+        @ux.get_hexes.each { |hex| @queue.push(hex) }
       end
+      send_data 'waiting'
+    end
+
+    def is_valid?(data)
+      data =~ /([favesb]|[01]{6})/
     end
 
   end
@@ -29,17 +32,16 @@ module DIDV
 
     def initialize(q)
       @queue = q
+    end
 
-      send_data DIDV::to_braille("DIDV").hex_lines[0]
-      sleep 3
-
-      cb = Proc.new do |msg|
-        p msg
-        send_data(msg)
-        q.pop &cb
+    def receive_data(data)
+      if data == 'waiting'
+        @queue.pop { |msg| send_data msg }
       end
+    end
 
-      q.pop &cb
+    def unbind
+      EM.stop
     end
 
   end

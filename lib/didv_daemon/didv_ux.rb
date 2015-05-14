@@ -68,6 +68,18 @@ module DIDV
       end
     end
 
+    # @return [String] representação do hex que será despachado.
+    def get_representation
+      case menu
+      when "ler"
+        @filelist.first[:line].to_text
+      when "escrevendo"
+        @writer.current_line
+      else
+        option.to_text
+      end
+    end
+
     # Tratamento de entrada de dados.
     #
     # @param input [String] dado de entrada.

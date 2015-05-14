@@ -16,6 +16,21 @@ module DIDV
       end
       line
     end
+
+
+    # @param content [String] conteúdo de texto Braille.
+    # @return [Boolean] se o conteúdo é válido ou não.
+    def valid_content?(content)
+      if content.nil? or
+        ( content.delete("10\n").empty? and
+        content.gsub("\n",'').size % POINTS == 0 )
+      then
+        true
+      else
+        false
+      end
+    end
+
   end
 
   # método que desenha no terminal a representação do texto Braille em pinos.
@@ -40,10 +55,10 @@ module DIDV
     #
     # @param content [String] novo conteúdo Braille
     def content=(content)
-      if valid? content
+      if valid_content? content
         @content = content
       else
-        raise "Invalid content!"
+        raise "Invalid content! #{content.inspect}"
       end
     end
 
@@ -170,19 +185,6 @@ module DIDV
     end
 
     private
-
-    # @param content [String] conteúdo de texto Braille.
-    # @return [Boolean] se o conteúdo é válido ou não.
-    def valid?(content)
-      if content.nil? or
-        ( content.delete("10\n").empty? and
-        content.gsub("\n",'').size % POINTS == 0 )
-      then
-        true
-      else
-        false
-      end
-    end
 
     # Divide o conteúdo em um array de pinos
     #
