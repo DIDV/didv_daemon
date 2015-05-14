@@ -11,7 +11,7 @@ describe DIDV::Braille, "new" do
   end
 
   it "should raise an error to a invalid content" do
-    expect{ DIDV::Braille.new("aaa") }.to raise_error("Invalid content!")
+    expect{ DIDV::Braille.new("aaa") }.to raise_error("Invalid content! \"aaa\"")
   end
 
 end
