@@ -7,5 +7,5 @@ module DIDV
   POINTS = DICT["metadata"]["points"]
 
   # diretorio de armazenamento de arquivos de texto
-  TEXT_DIR = "./tmp/"
+  TEXT_DIR = "/home/didv/tmp/"
 end
