@@ -1,9 +1,15 @@
 module DIDV
 
+  # Classe que abstrai um eBook ePub a ser utilizado pelo DIDV.
   class EPub
 
-    attr_accessor :metadata,:text
+    # Metadados do ePub (autor, título, etc).
+    attr_accessor :metadata
 
+    # Conteúdo textual do ePub.
+    attr_accessor :text
+
+    # @param filename [String] nome do arquivo que será abstraído pela instância da classe.
     def initialize(filename)
       @epub = load_epub(filename)
       @content_opf = load_content_opf
@@ -14,6 +20,9 @@ module DIDV
 
     private
 
+    # Carrega arquivo ePub.
+    #
+    # @param filename [String] nome do arquivo que será carregado.
     def load_epub(filename)
       begin
         Zip::File.open(filename)
@@ -22,6 +31,7 @@ module DIDV
       end
     end
 
+    # @return [String] localização do mapa do ePub.
     def content_entry_path
       begin
         container = Nokogiri::XML(@epub.read("META-INF/container.xml"))
@@ -31,11 +41,13 @@ module DIDV
       end
     end
 
+    # @return [Nokogiri::XML] esqueleto do ePub.
     def load_content_opf
       content_entry = content_entry_path
       Nokogiri::XML(@epub.read(content_entry)).remove_namespaces!
     end
 
+    # @return [Hash] metadados do ePub.
     def load_metadata
       metadata = {}
       metadata[:title] = @content_opf.css("title").text
@@ -43,6 +55,7 @@ module DIDV
       metadata
     end
 
+    # @return [String] conteúdo textual do ePub.
     def load_text
       text = ""
       @spine.each do |item_id|
@@ -52,6 +65,7 @@ module DIDV
       text
     end
 
+    # @return [Array] localizações do conteúdo textual dentro do ePub.
     def load_spine
       @spine = []
       @content_opf.css("itemref").each do |itemref|
@@ -59,6 +73,7 @@ module DIDV
       end
     end
 
+    # @return [String] mapa das localizações do conteúdo textual do ePub.
     def item_href(item_id)
       query = "//manifest/item[@id='#{item_id}']"
       @content_opf.xpath(query).attribute("href").value

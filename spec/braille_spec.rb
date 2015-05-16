@@ -11,7 +11,7 @@ describe DIDV::Braille, "new" do
   end
 
   it "should raise an error to a invalid content" do
-    expect{ DIDV::Braille.new("aaa") }.to raise_error("Invalid content!")
+    expect{ DIDV::Braille.new("aaa") }.to raise_error("Invalid content! \"aaa\"")
   end
 
 end
@@ -41,6 +41,16 @@ describe DIDV::Braille, "to_text" do
   it "should return a EOL to a EOT" do
     br = DIDV::Braille.new('000101010101000101010101000101010101')
     expect(br.to_text).to eq("\n")
+  end
+
+  it "should return a number followed by a lowercase char" do
+    br = DIDV::Braille.new('001111' + '100000' + '000010' + '100000')
+    expect(br.to_text).to eq("1a")
+  end
+
+  it "should ignore flags when not followed by chars" do
+    br = DIDV::Braille.new('001111' + '100000' + '000010')
+    expect(br.to_text).to eq("1")
   end
 
 end
