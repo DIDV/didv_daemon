@@ -43,6 +43,16 @@ describe DIDV::Braille, "to_text" do
     expect(br.to_text).to eq("\n")
   end
 
+  it "should return a number followed by a lowercase char" do
+    br = DIDV::Braille.new('001111' + '100000' + '000010' + '100000')
+    expect(br.to_text).to eq("1a")
+  end
+
+  it "should ignore flags when not followed by chars" do
+    br = DIDV::Braille.new('001111' + '100000' + '000010')
+    expect(br.to_text).to eq("1")
+  end
+
 end
 
 describe DIDV::Braille, "hex" do
