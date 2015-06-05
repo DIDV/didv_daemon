@@ -52,6 +52,11 @@ module DIDV
       @index = @text.cells.size
     end
 
+    # @return [Boolean] se o cursor se encontra no fim do texto.
+    def eot?
+      @index == @text.cells.size
+    end
+
     # Termina a linha com espaços.
     def end_of_line
       column = index_position[1]

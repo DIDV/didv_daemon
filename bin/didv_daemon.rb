@@ -13,6 +13,7 @@ module DIDV
     end
 
     def receive_data(data)
+      data.chomp!
       if is_valid? data
         @ux.get_input(data)
         p @ux.get_representation

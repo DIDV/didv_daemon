@@ -54,6 +54,7 @@ module DIDV
     def initialize
        super
        load_options
+       @buzzer = Buzzer.new(1)
     end
 
     # @return [String] hex pra ser despachado.
@@ -266,6 +267,7 @@ module DIDV
     # Avança cursor para próxima posição durante edição de texto.
     def next_char
       @writer.increment_index
+      @buzzer.buzz! if @writer.eot?
     end
 
     # Retorna cursor para posição anterior durante edição de texto.
