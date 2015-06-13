@@ -6,9 +6,11 @@ module DIDV
 
     attr_reader :queue
 
-    def initialize(q)
+    def initialize(q,ux)
       @queue = q
-      @ux = DIDV::UX.new
+      @ux = ux
+      @ux.get_hexes.each { |hex| @queue.push(hex) }
+      @last_representation = ""
       send_data 'waiting'
     end
 
@@ -17,7 +19,13 @@ module DIDV
       if is_valid? data
         @ux.get_input(data)
         p @ux.get_representation
-        @ux.get_hexes.each { |hex| @queue.push(hex) }
+        unless @last_representation == @ux.get_representation
+          @ux.get_hexes.each { |hex| @queue.push(hex) }
+          if @ux.menu == 'desligar'
+            @queue.push('F4')
+          end
+	  @last_representation = @ux.get_representation
+	end
       end
       send_data 'waiting'
     end
@@ -51,6 +59,7 @@ end
 
 EM.run do
   q = EM::Queue.new
+  ux = DIDV::UX.new
   EM.connect('127.0.0.1',9002,DIDV::DisplayConnection,q)
-  EM.start_server('127.0.0.1',9001,DIDV::Daemon,q)
+  EM.start_server('127.0.0.1',9001,DIDV::Daemon,q,ux)
 end
