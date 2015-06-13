@@ -15,9 +15,12 @@ module DIDV
     # sinal sonoro através do Buzzer.
     #
     def buzz!
-      `gpio pwm 1 120`
-      sleep @buzz_time
-      stop_buzz
+      Thread.new do
+        `gpio pwm 1 120`
+        sleep @buzz_time
+        stop_buzz
+        self.kill
+      end
     end
 
     private
@@ -37,6 +40,7 @@ module DIDV
     #
     def stop_buzz
       `gpio pwm 1 0`
+      `gpio unexport 1`
     end
 
   end

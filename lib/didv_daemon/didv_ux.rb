@@ -7,6 +7,8 @@ module DIDV
   # dessas linhas.
   class UX
 
+    attr_accessor :voice_player
+
     # Maquina de Estados
     state_machine :menu, initial: :principal do
 
@@ -14,6 +16,7 @@ module DIDV
       after_transition on: :seleciona_ler, do: :load_valid_files_list
       after_transition on: :seleciona_do_inicio, do: :load_text_to_read_from_beginning
       after_transition on: :seleciona_continuar, do: :load_text_to_read
+      after_transition on: :seleciona_desligar, do: :shutdown_didv
 
       # ler
       event :seleciona_ler do
@@ -54,7 +57,9 @@ module DIDV
     def initialize
        super
        load_options
-       @buzzer = Buzzer.new(1)
+       # @buzzer = Buzzer.new(1)
+       @voice_player = VoicePlayer.new
+       @voice_player.speak! "DIDV"
     end
 
     # @return [String] hex pra ser despachado.
@@ -77,6 +82,7 @@ module DIDV
       when "escrevendo"
         @writer.current_line
       else
+        #ai@voice_player.speak! option.to_text
         option.to_text
       end
     end
@@ -90,6 +96,7 @@ module DIDV
 
       # avancar
       when 'a'
+        @voice_player.speak! "avancar"
         case menu
         when 'do_inicio',
              'continuar' then line_forth
@@ -100,6 +107,7 @@ module DIDV
 
       # voltar
       when 'v'
+        @voice_player.speak! "voltar"
         case menu
         when 'do_inicio',
              'continuar' then line_back
@@ -110,12 +118,14 @@ module DIDV
 
       # fim
       when 'f'
+        @voice_player.speak! "fim"
         case menu
         when 'escrevendo' then end_of_text
         end
 
       # enter
       when 'e'
+        @voice_player.speak! "enter"
         case menu
 
         when 'ler'
@@ -139,12 +149,14 @@ module DIDV
 
       # backspace
       when 'b'
+        @voice_player.speak! "backspace"
         case menu
         when 'escrevendo' then delete_char
         end
 
       # esc
       when 's'
+        @voice_player.speak! "esc"
         case menu
         when 'ler','escrever' then seleciona_principal
         when 'ler_modo',
@@ -267,7 +279,7 @@ module DIDV
     # Avança cursor para próxima posição durante edição de texto.
     def next_char
       @writer.increment_index
-      @buzzer.buzz! if @writer.eot?
+      # @buzzer.buzz! if @writer.eot?
     end
 
     # Retorna cursor para posição anterior durante edição de texto.
@@ -312,6 +324,12 @@ module DIDV
       else
         seleciona_escrevendo
       end
+    end
+
+    def shutdown_didv
+      sleep 10
+      `sudo service monit stop`
+      `sudo shutdown -h now`
     end
 
   end

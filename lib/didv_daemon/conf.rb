@@ -5,6 +5,7 @@ module DIDV
 
   # dicionario ASCII -> Voz
   VOICE_DICT = YAML::load_file("#{File.dirname(__FILE__)}/voice.yml")
+  VOICE_DIR = "/home/didv/voice/"
 
   # quantidade de pinos por cela Braille
   POINTS = DICT["metadata"]["points"]

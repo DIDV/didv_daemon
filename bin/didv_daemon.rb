@@ -10,7 +10,7 @@ module DIDV
       @queue = q
       @ux = ux
       @ux.get_hexes.each { |hex| @queue.push(hex) }
-      @last_representation = ""
+      @last_representation = "ler"
       send_data 'waiting'
     end
 

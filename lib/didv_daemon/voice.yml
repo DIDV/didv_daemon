@@ -1,4 +1,16 @@
 ---
-  "DIDV"     :
-  "ler"      :
-  "escrever" :
+"DIDV"     : "didv.mp3"
+"ler"      : "ler.mp3"
+"escrever" : "escrever.mp3"
+"desligar" : "desligar.mp3"
+"do inicio" : "do_inicio.mp3"
+"continuar" : "continuar.mp3"
+"salvar" : "salvar.mp3"
+"nao salvar" : "nao_salvar.mp3"
+"cancelar" : "cancelar.mp3"
+"avancar" : "avancar.mp3"
+"voltar" : "voltar.mp3"
+"fim" : "fim.mp3"
+"enter" : "enter.mp3"
+"backspace" : "backspace.mp3"
+"esc" : "esc.mp3"
