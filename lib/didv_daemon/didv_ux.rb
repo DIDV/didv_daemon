@@ -7,7 +7,7 @@ module DIDV
   # dessas linhas.
   class UX
 
-    attr_accessor :voice_player
+    attr_accessor :voice_player, :time_to_down
 
     # Maquina de Estados
     state_machine :menu, initial: :principal do
@@ -16,7 +16,7 @@ module DIDV
       after_transition on: :seleciona_ler, do: :load_valid_files_list
       after_transition on: :seleciona_do_inicio, do: :load_text_to_read_from_beginning
       after_transition on: :seleciona_continuar, do: :load_text_to_read
-      after_transition on: :seleciona_desligar, do: :shutdown_didv
+      after_transition on: :seleciona_desligar, do: :shutdown_display
 
       # ler
       event :seleciona_ler do
@@ -60,6 +60,12 @@ module DIDV
        # @buzzer = Buzzer.new(1)
        @voice_player = VoicePlayer.new
        @voice_player.speak! "DIDV"
+       @time_to_down = false
+    end
+
+    def shutdown_display
+      @time_to_down = true
+      shutdown_didv
     end
 
     # @return [String] hex pra ser despachado.
@@ -69,6 +75,8 @@ module DIDV
         @filelist.first[:line].hex_lines
       when "escrevendo"
         @writer.current_line
+      when "desligar"
+        'L'.chars
       else
         option.hex_lines
       end
@@ -327,9 +335,12 @@ module DIDV
     end
 
     def shutdown_didv
-      sleep 10
-      `sudo service monit stop`
-      `sudo shutdown -h now`
+      Thread.new do
+        sleep 20
+        puts 'down :('
+        `sudo service monit stop`
+        `sudo shutdown -h now`
+      end
     end
 
   end

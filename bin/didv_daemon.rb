@@ -19,11 +19,8 @@ module DIDV
       if is_valid? data
         @ux.get_input(data)
         p @ux.get_representation
-        unless @last_representation == @ux.get_representation
+        unless (@last_representation == @ux.get_representation and @ux.menu != "desligar")
           @ux.get_hexes.each { |hex| @queue.push(hex) }
-          if @ux.menu == 'desligar'
-            @queue.push('F4')
-          end
 	  @last_representation = @ux.get_representation
 	end
       end
@@ -39,13 +36,19 @@ module DIDV
   class DisplayConnection < EM::Connection
     attr_reader :queue
 
-    def initialize(q)
+    def initialize(q,ux)
       @queue = q
+      @ux = ux
     end
 
     def receive_data(data)
       if data == 'waiting'
-        @queue.pop { |msg| send_data msg }
+        if @ux.time_to_down == true
+          puts 'time to down'
+          send_data 'F'
+        else
+          @queue.pop { |msg| send_data msg }
+        end
       end
     end
 
@@ -60,6 +63,6 @@ end
 EM.run do
   q = EM::Queue.new
   ux = DIDV::UX.new
-  EM.connect('127.0.0.1',9002,DIDV::DisplayConnection,q)
+  EM.connect('127.0.0.1',9002,DIDV::DisplayConnection,q,ux)
   EM.start_server('127.0.0.1',9001,DIDV::Daemon,q,ux)
 end
